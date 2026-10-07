@@ -1,7 +1,6 @@
-import express from "express"
+import { createServer } from "./server.ts";
 
-
-const app = express()
+const app = createServer();
 
 const PORT = 3000;
 
