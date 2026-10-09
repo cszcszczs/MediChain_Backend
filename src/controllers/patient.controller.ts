@@ -6,7 +6,7 @@ export class PatientController {
   constructor(readonly patientService: IPatientInterface) {}
  
   createUser = async (req: Request, res: Response): Promise<void> => {
-    const request: PatientRequestDTO = req.body as PatientRequestDTO;
+    const request: PatientRequestDTO = req.body;
     const result = await this.patientService.createPatient(request);
     res.status(201).json(result);
   }
