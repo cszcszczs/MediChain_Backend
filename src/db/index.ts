@@ -1,13 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+import { env } from '../config/env.ts';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
 // Se usa la conexión a la base de datos
-const connectionString = process.env.DATABASE_URL;
+const connectionString = env.url;
 
 const pool = new Pool({
   connectionString,
