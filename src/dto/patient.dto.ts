@@ -1,15 +1,4 @@
-enum DocumentType {
-  CEDULA,
-  TARJETA_IDENTIDAD,
-  PASAPORTE,
-  CEDULA_EXTRANJERIA
-}
-
-enum Gender {
-  MASCULINO,
-  FEMENINO,
-  OTRO
-}
+import { DocumentType, Gender } from "@prisma/client";
 
 export interface PatientRequestDTO {
   firstName: string,
@@ -19,7 +8,7 @@ export interface PatientRequestDTO {
   birthDate: string,
   gender: Gender,
   email: string,
-  phonr: string,
+  phone: string,
   city: string,
   address: string,
   password: string
