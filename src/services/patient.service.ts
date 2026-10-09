@@ -1,10 +1,14 @@
+import { hash } from "argon2";
 import { PatientRequestDTO, PatientResponseDTO } from "../dto/patient.dto.ts";
-import { IPatientInterface } from "./interfaces/patient.interface.ts";
+import { IPatientRepository } from "./interfaces/patient.interface.ts";
 
 export class PatientService {
-  constructor(readonly patientRepository: IPatientInterface){}
+  constructor(readonly patientRepository: IPatientRepository){}
 
   async createPatient(patient: PatientRequestDTO): Promise<PatientResponseDTO> {
-    return await this.patientRepository.createPatient(patient);
+    const { password, ...patientData } = patient;
+    const passwordHash = await hash(password);
+
+    return this.patientRepository.createPatient({ ...patientData, passwordHash });
   }
 }
