@@ -1,5 +1,5 @@
 import { defineConfig } from '@prisma/config';
-import { env } from "../config/env.ts";
+import { env } from "../src/config/env.ts";
 
 export default defineConfig({
   datasource: {

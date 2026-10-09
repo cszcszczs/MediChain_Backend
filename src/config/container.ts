@@ -9,5 +9,4 @@ export const container = createContainer({
 container.register({
   patientService: asClass(PatientService).scoped(),
   patientController: asClass(PatientController).scoped(),
-  //transacionService: asClass(TransacionService).scoped()
 })
