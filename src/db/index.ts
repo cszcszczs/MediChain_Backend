@@ -9,12 +9,13 @@ const globalForPrisma = globalThis as unknown as {
 
 // Se usa la conexión a la base de datos
 const connectionString = env.url;
+const isLocalDatabase = ['localhost', '127.0.0.1', '[::1]'].includes(
+  new URL(connectionString).hostname,
+);
 
 const pool = new Pool({
   connectionString,
-  // Desactiva la verificación estricta de SSL para conexiones pooled de Supabase
-  ssl: { rejectUnauthorized: false },
-  // Limita el tamaño del pool local para no saturar el pooler de Supabase
+  ...(isLocalDatabase ? {} : { ssl: { rejectUnauthorized: false } }),
   max: 10,
 });
 
