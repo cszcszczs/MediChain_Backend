@@ -1,0 +1,49 @@
+enum DocumentType {
+  CEDULA
+  TARJETA_IDENTIDAD
+  PASAPORTE
+  CEDULA_EXTRANJERIA
+}
+
+enum Gender {
+  MASCULINO
+  FEMENINO
+  OTRO
+}
+
+model Patient {
+  id             String       @id @default(uuid())
+  firstName      String       @map("first_name")
+  lastName       String       @map("last_name")
+  documentType   DocumentType @map("document_type")
+  documentNumber String       @unique @map("document_number")
+  birthDate      DateTime     @map("birth_date")
+  gender         Gender
+  email          String       @unique
+  phone          String
+  city           String
+  address        String
+
+  // Campo de estado activo / inactivo
+  isActive Boolean @default(true) @map("is_active")
+
+  // Relación 1:1 con las credenciales de acceso
+  authCredential AuthCredential?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("patients")
+}
+
+model AuthCredential {
+  id           String   @id @default(uuid())
+  passwordHash String   @map("password_hash")
+  patientId    String   @unique @map("patient_id")
+  patient      Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("auth_credentials")
+}
