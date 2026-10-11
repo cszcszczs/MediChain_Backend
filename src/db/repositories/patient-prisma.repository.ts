@@ -1,9 +1,29 @@
 import { PatientResponseDTO } from "../../dto/patient.dto.ts";
-import { CreatePatientData } from "../../services/interfaces/patient.interface.ts";
+import { CreatePatientData, PatientLoginData } from "../../services/interfaces/patient.interface.ts";
 import { IPatientRepository } from "../../services/interfaces/patient.interface.ts";
 import prisma from "../index.ts";
 
 export class PatientPrismaRepository implements IPatientRepository {
+    async findPatientLoginDataByEmail(email: string): Promise<PatientLoginData | null> {
+        return prisma.patient.findUnique({
+            where: { email },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                documentNumber: true,
+                email: true,
+                phone: true,
+                city: true,
+                address: true,
+                isActive: true,
+                authCredential: {
+                    select: { passwordHash: true },
+                },
+            },
+        });
+    }
+
     async createPatient(patient: CreatePatientData): Promise<PatientResponseDTO> {
         const newPatient = await prisma.patient.create({
             data: {
