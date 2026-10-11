@@ -3,6 +3,7 @@ model User {
   email          String          @unique
   isActive       Boolean         @default(true) @map("is_active")
   patient        Patient?
+  professional   Professional?
   authCredential AuthCredential?
 
   createdAt DateTime @default(now()) @map("created_at")
