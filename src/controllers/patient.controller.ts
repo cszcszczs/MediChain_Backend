@@ -10,4 +10,5 @@ export class PatientController {
     const result = await this.patientService.createPatient(request);
     res.status(201).json(result);
   }
+
 }

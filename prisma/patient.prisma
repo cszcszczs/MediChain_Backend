@@ -19,31 +19,14 @@ model Patient {
   documentNumber String       @unique @map("document_number")
   birthDate      DateTime     @map("birth_date")
   gender         Gender
-  email          String       @unique
   phone          String
   city           String
   address        String
-
-  // Campo de estado activo / inactivo
-  isActive Boolean @default(true) @map("is_active")
-
-  // Relación 1:1 con las credenciales de acceso
-  authCredential AuthCredential?
+  userId         String       @unique @map("user_id")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("patients")
-}
-
-model AuthCredential {
-  id           String   @id @default(uuid())
-  passwordHash String   @map("password_hash")
-  patientId    String   @unique @map("patient_id")
-  patient      Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("auth_credentials")
 }

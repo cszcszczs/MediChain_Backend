@@ -13,22 +13,27 @@ export class PatientPrismaRepository implements IPatientRepository {
                 documentNumber: patient.documentNumber,
                 birthDate: new Date(patient.birthDate),
                 gender: patient.gender,
-                email: patient.email,
                 phone: patient.phone,
                 city: patient.city,
                 address: patient.address,
-                authCredential: {
+                user: {
                     create: {
-                        passwordHash: patient.passwordHash,
+                        email: patient.email,
+                        authCredential: {
+                            create: {
+                                passwordHash: patient.passwordHash,
+                            },
+                        },
                     },
                 },
-            }
+            },
+            include: { user: true },
         });
         return {
             id: newPatient.id,
             name: `${newPatient.firstName} ${newPatient.lastName}`.trim(),
             documentNumber: newPatient.documentNumber,
-            email: newPatient.email,
+            email: newPatient.user.email,
             phone: newPatient.phone,
             city: newPatient.city,
             address: newPatient.address,

@@ -1,0 +1,24 @@
+model User {
+  id             String          @id @default(uuid())
+  email          String          @unique
+  isActive       Boolean         @default(true) @map("is_active")
+  patient        Patient?
+  authCredential AuthCredential?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model AuthCredential {
+  id           String   @id @default(uuid())
+  passwordHash String   @map("password_hash")
+  userId       String   @unique @map("user_id")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("auth_credentials")
+}
