@@ -16,13 +16,7 @@ export const createPatientSchema = z.object({
   password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
 });
 
-export const loginPatientSchema = z.object({
-  email: z.email("El correo es inválido"),
-  password: z.string().min(1, "La contraseña es obligatoria"),
-});
-
 export type PatientRequestDTO = z.infer<typeof createPatientSchema>;
-export type LoginPatientRequestDTO = z.infer<typeof loginPatientSchema>;
 
 export interface PatientResponseDTO {
   id: string;
@@ -32,10 +26,4 @@ export interface PatientResponseDTO {
   phone: string;
   city: string;
   address: string;
-}
-
-export interface LoginPatientResponseDTO {
-  accessToken: string;
-  tokenType: "Bearer";
-  patient: PatientResponseDTO;
 }
