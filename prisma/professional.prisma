@@ -1,0 +1,39 @@
+enum Specialty {
+  GENERAL_MEDICINE
+  PEDIATRICS
+  CARDIOLOGY
+  GENERAL_SURGERY
+  GYNECOLOGY
+  DERMATOLOGY
+  NEUROLOGY
+  PSYCHIATRY
+  ORTHOPEDICS
+  OPHTHALMOLOGY
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+model Professional {
+  id             String       @id @default(cuid())
+  firstName      String       @map("first_name")
+  lastName       String       @map("last_name")
+  documentType   DocumentType @map("document_type")
+  documentNumber String       @unique @map("document_number")
+  phone          String
+  email          String       @unique
+  specialty      Specialty
+  medicalLicense String       @unique @map("medical_license")
+  institution    String
+  userStatus     UserStatus   @default(ACTIVE) @map("user_status")
+  userId         String       @unique @map("user_id")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("professionals")
+}
