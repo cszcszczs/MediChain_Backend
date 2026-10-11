@@ -4,6 +4,32 @@ import { IPatientRepository } from "../../services/interfaces/patient.interface.
 import prisma from "../index.ts";
 
 export class PatientPrismaRepository implements IPatientRepository {
+    async listActivePatients(): Promise<PatientResponseDTO[]> {
+        const patients = await prisma.patient.findMany({
+            where: { user: { isActive: true } },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                documentNumber: true,
+                phone: true,
+                city: true,
+                address: true,
+                user: { select: { email: true } },
+            },
+        });
+
+        return patients.map((patient) => ({
+            id: patient.id,
+            name: `${patient.firstName} ${patient.lastName}`.trim(),
+            documentNumber: patient.documentNumber,
+            email: patient.user.email,
+            phone: patient.phone,
+            city: patient.city,
+            address: patient.address,
+        }));
+    }
+
     async createPatient(patient: CreatePatientData): Promise<PatientResponseDTO> {
         const newPatient = await prisma.patient.create({
             data: {

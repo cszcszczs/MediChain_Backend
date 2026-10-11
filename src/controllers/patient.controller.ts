@@ -11,4 +11,9 @@ export class PatientController {
     res.status(201).json(result);
   }
 
+  listActivePatients = async (_req: Request, res: Response): Promise<void> => {
+    const result = await this.patientService.listActivePatients();
+    res.status(200).json(result);
+  }
+
 }

@@ -11,4 +11,8 @@ export class PatientService {
 
     return this.patientRepository.createPatient({ ...patientData, passwordHash });
   }
+
+  async listActivePatients(): Promise<PatientResponseDTO[]> {
+    return this.patientRepository.listActivePatients();
+  }
 }
