@@ -8,6 +8,10 @@ import { AuthPrismaRepository } from "../db/repositories/auth-prisma.repository.
 import { ProfessionalService } from "../services/professional.service.ts";
 import { ProfessionalController } from "../controllers/professional.controller.ts";
 import { ProfessionalPrismaRepository } from "../db/repositories/professional-prisma.repository.ts";
+import { HistoryController } from "../controllers/history.controller.ts";
+import { HistoryPrismaRepository } from "../db/repositories/history-prisma.repository.ts";
+import { HistoryService } from "../services/history.service.ts";
+import { SupabaseHistoryStorage } from "../services/supabase-history.storage.ts";
 
 export const container = createContainer({
   injectionMode: InjectionMode.CLASSIC,
@@ -23,4 +27,8 @@ container.register({
   professionalService: asClass(ProfessionalService).scoped(),
   professionalController: asClass(ProfessionalController).scoped(),
   professionalRepository: asClass(ProfessionalPrismaRepository).scoped(),
+  historyController: asClass(HistoryController).scoped(),
+  historyService: asClass(HistoryService).scoped(),
+  historyRepository: asClass(HistoryPrismaRepository).scoped(),
+  historyStorage: asClass(SupabaseHistoryStorage).scoped(),
 })

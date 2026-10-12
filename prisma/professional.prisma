@@ -31,6 +31,7 @@ model Professional {
   userStatus     UserStatus   @default(ACTIVE) @map("user_status")
   userId         String       @unique @map("user_id")
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicalHistories MedicalHistory[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
