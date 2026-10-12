@@ -12,6 +12,9 @@ import { HistoryController } from "../controllers/history.controller.ts";
 import { HistoryPrismaRepository } from "../db/repositories/history-prisma.repository.ts";
 import { HistoryService } from "../services/history.service.ts";
 import { SupabaseHistoryStorage } from "../services/supabase-history.storage.ts";
+import { AccessGrantController } from "../controllers/access-grant.controller.ts";
+import { AccessGrantPrismaRepository } from "../db/repositories/access-grant-prisma.repository.ts";
+import { AccessGrantService } from "../services/access-grant.service.ts";
 
 export const container = createContainer({
   injectionMode: InjectionMode.CLASSIC,
@@ -31,4 +34,7 @@ container.register({
   historyService: asClass(HistoryService).scoped(),
   historyRepository: asClass(HistoryPrismaRepository).scoped(),
   historyStorage: asClass(SupabaseHistoryStorage).scoped(),
+  accessGrantController: asClass(AccessGrantController).scoped(),
+  accessGrantService: asClass(AccessGrantService).scoped(),
+  accessGrantRepository: asClass(AccessGrantPrismaRepository).scoped(),
 })
