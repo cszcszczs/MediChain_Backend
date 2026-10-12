@@ -12,7 +12,7 @@ router.get("/", authenticate, async (req, res) => {
     return controller.listActivePatients(req, res);
 });
 
-router.post("/", validate(createPatientSchema), async (req, res) => {
+router.post("/", authenticate, validate(createPatientSchema), async (req, res) => {
     const controller = container.resolve<PatientController>("patientController");
     return controller.createUser(req, res);
 });
