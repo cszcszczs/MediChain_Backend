@@ -12,7 +12,7 @@ router.get("/", authenticate, async (req, res) => {
   return controller.listActiveProfessionals(req, res);
 });
 
-router.post("/", validate(createProfessionalSchema), async (req, res) => {
+router.post("/", authenticate, validate(createProfessionalSchema), async (req, res) => {
   const controller = container.resolve<ProfessionalController>("professionalController");
   return controller.createProfessional(req, res);
 });

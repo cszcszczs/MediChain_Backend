@@ -134,13 +134,18 @@ describe("GET /v1/professional", () => {
 });
 
 describe("POST /v1/professional", () => {
+  const jwtSecret = "test-only-secret-with-at-least-32-bytes";
   let server: Awaited<ReturnType<typeof import("node:http").createServer>>;
+  let endpoint: string;
 
   before(async () => {
-    process.env.JWT_SECRET = "test-only-secret-with-at-least-32-bytes";
+    process.env.JWT_SECRET = jwtSecret;
     const { createServer } = await import("../src/server.ts");
     server = createServer().listen(0, "127.0.0.1");
     await once(server, "listening");
+    const address = server.address();
+    assert.ok(address && typeof address !== "string");
+    endpoint = `http://127.0.0.1:${address.port}/v1/professional`;
   });
 
   after(async () => {
@@ -151,13 +156,29 @@ describe("POST /v1/professional", () => {
     }
   });
 
-  it("returns the standard validation error for invalid input", async () => {
-    const address = server.address();
-    assert.ok(address && typeof address !== "string");
-
-    const response = await fetch(`http://127.0.0.1:${address.port}/v1/professional`, {
+  it("rejects registration without a bearer token", async () => {
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: { "content-type": "application/json" },
+      body: JSON.stringify({}),
+    });
+
+    assert.equal(response.status, 401);
+  });
+
+  it("returns the standard validation error for invalid input with a valid token", async () => {
+    const token = await new SignJWT({})
+      .setProtectedHeader({ alg: "HS256" })
+      .setSubject("admin-user")
+      .setIssuedAt()
+      .setExpirationTime("1h")
+      .sign(new TextEncoder().encode(jwtSecret));
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({}),
     });
     const body = await response.json() as { message: string; errors: unknown[] };
