@@ -19,4 +19,8 @@ export class ProfessionalService {
       passwordHash,
     });
   }
+
+  async listActiveProfessionals(): Promise<ProfessionalResponseDTO[]> {
+    return this.professionalRepository.listActiveProfessionals();
+  }
 }

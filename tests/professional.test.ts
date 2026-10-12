@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { once } from "node:events";
 import { after, before, describe, it } from "node:test";
 import { verify } from "argon2";
+import { SignJWT } from "jose";
 import { createProfessionalSchema } from "../src/dto/professional.dto.ts";
 import type {
   CreateProfessionalData,
@@ -69,6 +70,66 @@ describe("ProfessionalService.createProfessional", () => {
     assert.equal("password" in persisted, false);
     assert.equal("passwordHash" in result, false);
     assert.deepEqual(result, publicProfessional);
+  });
+});
+
+describe("ProfessionalService.listActiveProfessionals", () => {
+  it("delegates to the repository and returns public professional profiles", async () => {
+    const expected: ProfessionalResponseDTO[] = [];
+    const repository = {
+      listActiveProfessionals: async () => expected,
+    } as IProfessionalRepository;
+    const service = new ProfessionalService(repository);
+
+    assert.equal(await service.listActiveProfessionals(), expected);
+  });
+});
+
+describe("GET /v1/professional", () => {
+  const jwtSecret = "test-only-secret-with-at-least-32-bytes";
+  let server: Awaited<ReturnType<typeof import("node:http").createServer>>;
+  let endpoint: string;
+
+  before(async () => {
+    process.env.JWT_SECRET = jwtSecret;
+    const { createServer } = await import("../src/server.ts");
+    server = createServer().listen(0, "127.0.0.1");
+    await once(server, "listening");
+    const address = server.address();
+    assert.ok(address && typeof address !== "string");
+    endpoint = `http://127.0.0.1:${address.port}/v1/professional`;
+  });
+
+  after(async () => {
+    await new Promise<void>((resolve, reject) => {
+      server.close((error) => (error ? reject(error) : resolve()));
+    });
+  });
+
+  it("rejects requests without a valid bearer token", async () => {
+    const response = await fetch(endpoint);
+    assert.equal(response.status, 401);
+  });
+
+  it("returns active public professional profiles for a valid token", async () => {
+    const token = await new SignJWT({})
+      .setProtectedHeader({ alg: "HS256" })
+      .setSubject("test-user")
+      .setIssuedAt()
+      .setExpirationTime("1h")
+      .sign(new TextEncoder().encode(jwtSecret));
+    const response = await fetch(endpoint, {
+      headers: { authorization: `Bearer ${token}` },
+    });
+    const professionals = await response.json() as Array<Record<string, unknown>>;
+
+    assert.equal(response.status, 200);
+    assert.ok(Array.isArray(professionals));
+    for (const professional of professionals) {
+      assert.equal(professional.userStatus, "ACTIVE");
+      assert.equal("password" in professional, false);
+      assert.equal("passwordHash" in professional, false);
+    }
   });
 });
 

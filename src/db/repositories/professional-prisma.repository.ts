@@ -8,6 +8,43 @@ import {
 import prisma from "../index.ts";
 
 export class ProfessionalPrismaRepository implements IProfessionalRepository {
+  async listActiveProfessionals(): Promise<ProfessionalResponseDTO[]> {
+    const professionals = await prisma.professional.findMany({
+      where: {
+        userStatus: "ACTIVE",
+        user: { isActive: true },
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        documentType: true,
+        documentNumber: true,
+        phone: true,
+        email: true,
+        specialty: true,
+        medicalLicense: true,
+        institution: true,
+        userStatus: true,
+      },
+      orderBy: [{ createdAt: "desc" }, { id: "asc" }],
+    });
+
+    return professionals.map((professional) => ({
+      id: professional.id,
+      firstName: professional.firstName,
+      lastName: professional.lastName,
+      documentType: professional.documentType,
+      documentNumber: professional.documentNumber,
+      phone: professional.phone,
+      email: professional.email,
+      specialty: professional.specialty,
+      medicalLicense: professional.medicalLicense,
+      institution: professional.institution,
+      userStatus: professional.userStatus,
+    }));
+  }
+
   async createProfessional(
     professional: CreateProfessionalData,
   ): Promise<ProfessionalResponseDTO> {
