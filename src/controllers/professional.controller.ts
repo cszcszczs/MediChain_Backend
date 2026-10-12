@@ -10,4 +10,9 @@ export class ProfessionalController {
     const result = await this.professionalService.createProfessional(request);
     res.status(201).json(result);
   };
+
+  listActiveProfessionals = async (_req: Request, res: Response): Promise<void> => {
+    const result = await this.professionalService.listActiveProfessionals();
+    res.status(200).json(result);
+  };
 }

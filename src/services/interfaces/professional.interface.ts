@@ -9,8 +9,10 @@ export type CreateProfessionalData = Omit<ProfessionalRequestDTO, "password"> & 
 
 export interface IProfessionalInterface {
   createProfessional(professional: ProfessionalRequestDTO): Promise<ProfessionalResponseDTO>;
+  listActiveProfessionals(): Promise<ProfessionalResponseDTO[]>;
 }
 
 export interface IProfessionalRepository {
   createProfessional(professional: CreateProfessionalData): Promise<ProfessionalResponseDTO>;
+  listActiveProfessionals(): Promise<ProfessionalResponseDTO[]>;
 }
