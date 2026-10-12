@@ -2,6 +2,14 @@ import type { NextFunction, Request, Response } from "express";
 import { jwtVerify } from "jose";
 import { env } from "../config/env.ts";
 
+declare global {
+  namespace Express {
+    interface Request {
+      auth?: { userId: string };
+    }
+  }
+}
+
 export const authenticate = async (
   req: Request,
   res: Response,
@@ -16,7 +24,12 @@ export const authenticate = async (
   }
 
   try {
-    await jwtVerify(token, new TextEncoder().encode(env.jwtSecret));
+    const { payload } = await jwtVerify(token, new TextEncoder().encode(env.jwtSecret));
+    if (!payload.sub) {
+      res.status(401).json({ message: "Token de autenticación inválido" });
+      return;
+    }
+    req.auth = { userId: payload.sub };
     next();
   } catch {
     res.status(401).json({ message: "Token de autenticación inválido" });

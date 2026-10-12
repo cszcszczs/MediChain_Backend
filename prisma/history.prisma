@@ -1,0 +1,72 @@
+enum ExamStatus {
+  PENDING
+  COMPLETED
+}
+
+model MedicalHistory {
+  id               String   @id @default(uuid())
+  patientId        String   @map("patient_id")
+  patient          Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  professionalId   String   @map("professional_id")
+  professional     Professional @relation(fields: [professionalId], references: [id], onDelete: Restrict)
+  consultationDate DateTime @map("consultation_date")
+  symptoms         String?
+  diagnosis        String
+  treatment        String
+  bloodPressure    String?  @map("blood_pressure")
+  heartRate        Int?     @map("heart_rate")
+  temperature      Float?
+  weight           Float?
+  notes            String?
+  medications      Medication[]
+  exams            ExamResult[]
+  attachments      HistoryAttachment[]
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@index([patientId, consultationDate])
+  @@index([professionalId, consultationDate])
+  @@map("medical_histories")
+}
+
+model Medication {
+  id               String         @id @default(uuid())
+  medicalHistoryId String         @map("medical_history_id")
+  medicalHistory   MedicalHistory @relation(fields: [medicalHistoryId], references: [id], onDelete: Cascade)
+  name             String
+  dose             String
+  frequency        String
+  createdAt        DateTime       @default(now()) @map("created_at")
+
+  @@index([medicalHistoryId])
+  @@map("medications")
+}
+
+model ExamResult {
+  id               String         @id @default(uuid())
+  medicalHistoryId String         @map("medical_history_id")
+  medicalHistory   MedicalHistory @relation(fields: [medicalHistoryId], references: [id], onDelete: Cascade)
+  name             String
+  performedAt      DateTime       @map("performed_at")
+  status           ExamStatus     @default(COMPLETED)
+  result           String?
+  createdAt        DateTime       @default(now()) @map("created_at")
+
+  @@index([medicalHistoryId])
+  @@map("exam_results")
+}
+
+model HistoryAttachment {
+  id               String         @id @default(uuid())
+  medicalHistoryId String         @map("medical_history_id")
+  medicalHistory   MedicalHistory @relation(fields: [medicalHistoryId], references: [id], onDelete: Cascade)
+  bucket           String
+  objectPath       String         @unique @map("object_path")
+  originalName     String         @map("original_name")
+  mimeType         String         @map("mime_type")
+  sizeBytes        Int            @map("size_bytes")
+  createdAt        DateTime       @default(now()) @map("created_at")
+
+  @@index([medicalHistoryId])
+  @@map("history_attachments")
+}
