@@ -1,0 +1,42 @@
+enum PermissionAction {
+  READ
+  UPDATE
+  CREATE
+  DELETE
+  AUTHORIZE_ACCESS
+}
+
+enum AccessGrantStatus {
+  PENDING
+  ACTIVE
+  REVOKED
+}
+
+enum AccessGrantRevocationReason {
+  MANUAL
+  EXPIRED
+}
+
+model AccessGrant {
+  id                 String                       @id @default(uuid())
+  professionalId     String                       @map("professional_id")
+  professional       Professional                 @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  patientId          String                       @map("patient_id")
+  patient            Patient                      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  grantedByUserId    String                       @map("granted_by_user_id")
+  grantedBy          User                         @relation("AccessGrantGrantedBy", fields: [grantedByUserId], references: [id], onDelete: Restrict)
+  actions            PermissionAction[]
+  status             AccessGrantStatus            @default(PENDING)
+  grantedAt          DateTime                     @default(now()) @map("granted_at")
+  acceptedAt         DateTime?                    @map("accepted_at")
+  expiresAt          DateTime?                    @map("expires_at")
+  revokedAt          DateTime?                    @map("revoked_at")
+  revocationReason   AccessGrantRevocationReason?  @map("revocation_reason")
+  createdAt          DateTime                     @default(now()) @map("created_at")
+  updatedAt          DateTime                     @updatedAt @map("updated_at")
+
+  @@index([professionalId, patientId, createdAt])
+  @@index([status, expiresAt])
+  @@index([grantedByUserId, createdAt])
+  @@map("access_grants")
+}

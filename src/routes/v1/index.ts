@@ -3,6 +3,7 @@ import authRoutes from "./auth.route.ts";
 import patientRoutes from "./patient.route.ts";
 import professionalRoutes from "./professional.route.ts";
 import historyRoutes from "./history.route.ts";
+import accessGrantRoutes from "./access-grant.route.ts";
 
 const router = Router();
 
@@ -10,5 +11,6 @@ router.use("/auth", authRoutes);
 router.use("/patient", patientRoutes);
 router.use("/professional", professionalRoutes);
 router.use("/history", historyRoutes);
+router.use("/access-grants", accessGrantRoutes);
 
 export default router;
