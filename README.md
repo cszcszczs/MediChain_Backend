@@ -494,5 +494,3 @@ La API usa los siguientes códigos principales:
 - La carga de historiales médicos usa `multipart/form-data` con validación de JSON en el campo `data`.
 - El historial permite adjuntar archivos en formato PDF o imágenes JPG/PNG.
 - Las validaciones y mensajes de error están centralizadas con `zod`.
-
-Si quieres, en un siguiente paso puedo dejarte también un README más orientado a frontend/mobile con ejemplos de consumo en curl, Postman o JavaScript, o incluso generar una colección de Postman para esta API.
