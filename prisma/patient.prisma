@@ -16,7 +16,9 @@ model Patient {
   firstName      String       @map("first_name")
   lastName       String       @map("last_name")
   documentType   DocumentType @map("document_type")
-  documentNumber String       @unique @map("document_number")
+  documentNumber String       @map("document_number")
+  documentIdentityId String   @unique @map("document_identity_id")
+  documentIdentity DocumentIdentity @relation(fields: [documentIdentityId], references: [id], onDelete: Restrict)
   birthDate      DateTime     @map("birth_date")
   gender         Gender
   phone          String
@@ -30,5 +32,6 @@ model Patient {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@unique([documentType, documentNumber], map: "patients_document_type_document_number_key")
   @@map("patients")
 }

@@ -22,7 +22,9 @@ model Professional {
   firstName      String       @map("first_name")
   lastName       String       @map("last_name")
   documentType   DocumentType @map("document_type")
-  documentNumber String       @unique @map("document_number")
+  documentNumber String       @map("document_number")
+  documentIdentityId String   @unique @map("document_identity_id")
+  documentIdentity DocumentIdentity @relation(fields: [documentIdentityId], references: [id], onDelete: Restrict)
   phone          String
   email          String       @unique
   specialty      Specialty
@@ -37,5 +39,6 @@ model Professional {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@unique([documentType, documentNumber], map: "professionals_document_type_document_number_key")
   @@map("professionals")
 }

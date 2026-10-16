@@ -1,0 +1,11 @@
+model DocumentIdentity {
+  id             String       @id @default(uuid())
+  documentType   DocumentType @map("document_type")
+  documentNumber String       @map("document_number")
+  patient        Patient?
+  professional   Professional?
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@unique([documentType, documentNumber], map: "document_identities_type_number_key")
+  @@map("document_identities")
+}
