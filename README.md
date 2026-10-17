@@ -97,6 +97,8 @@ PORT=3000
 JWT_SECRET=tu_secreto_super_seguro_con_mas_de_32_bytes
 DATABASE_URL=postgresql://usuario:password@host:puerto/base_de_datos
 DIRECT_URL=postgresql://usuario:password@host:puerto/base_de_datos
+SUPABASE_DATABASE_URL=postgresql://usuario:password@pooler-host:6543/postgres?pgbouncer=true&sslmode=require
+SUPABASE_DIRECT_URL=postgresql://usuario:password@direct-host:5432/postgres?sslmode=require
 SUPABASE_URL=https://tu-proyecto.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=tu_service_role_key
 SUPABASE_HISTORY_BUCKET=medical-history
@@ -121,6 +123,24 @@ Modo producción:
 ```bash
 npm run build
 npm start
+```
+
+Docker en desarrollo:
+
+```bash
+docker compose up --build
+```
+
+Docker en producción usa Supabase para PostgreSQL y Storage. Define `SUPABASE_DATABASE_URL` (pooler de transacciones), `SUPABASE_DIRECT_URL` (conexión directa para migraciones), `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` y `JWT_SECRET` en `.env`:
+
+```bash
+docker compose -f compose.prod.yaml up --build -d
+```
+
+El Compose de producción construye una imagen runtime sin dependencias de desarrollo, aplica las migraciones contra `SUPABASE_DIRECT_URL` en un servicio de ejecución única y luego inicia la API usando `SUPABASE_DATABASE_URL`. No levanta una base PostgreSQL local. Para consultar los logs:
+
+```bash
+docker compose -f compose.prod.yaml logs -f api
 ```
 
 El proyecto también expone una ruta de salud:
