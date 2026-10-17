@@ -1,0 +1,39 @@
+services:
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: migrate
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${SUPABASE_DIRECT_URL:?Define SUPABASE_DIRECT_URL en .env}
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: production
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET en .env}
+      DATABASE_URL: ${SUPABASE_DATABASE_URL:?Define SUPABASE_DATABASE_URL en .env}
+      SUPABASE_URL: ${SUPABASE_URL:?Define SUPABASE_URL en .env}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:?Define SUPABASE_SERVICE_ROLE_KEY en .env}
+      SUPABASE_HISTORY_BUCKET: ${SUPABASE_HISTORY_BUCKET:-medical-history}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
