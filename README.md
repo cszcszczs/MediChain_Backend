@@ -82,6 +82,14 @@ npx prisma generate
 npx prisma migrate deploy
 ```
 
+5. Configura `ADMIN_EMAIL` y `ADMIN_PASSWORD` en `.env` y crea el usuario inicial:
+
+```bash
+npm run db:seed
+```
+
+El seed es idempotente: si el usuario ya existe, no cambia su contraseña; si aún no tiene credenciales, las crea. La contraseña debe tener al menos 8 caracteres y se almacena con hash Argon2. Este usuario puede iniciar sesión como cualquier otra cuenta; el modelo actual no asigna roles de administrador.
+
 Si estás trabajando en local con migraciones de desarrollo:
 
 ```bash
@@ -94,6 +102,8 @@ Crea un archivo `.env` basado en `.env.example` y completa los valores reales.
 
 ```env
 PORT=3000
+ADMIN_EMAIL=admin@root.com
+ADMIN_PASSWORD=una_contraseña_segura_de_al_menos_8_caracteres
 JWT_SECRET=tu_secreto_super_seguro_con_mas_de_32_bytes
 DATABASE_URL=postgresql://usuario:password@host:puerto/base_de_datos
 DIRECT_URL=postgresql://usuario:password@host:puerto/base_de_datos
