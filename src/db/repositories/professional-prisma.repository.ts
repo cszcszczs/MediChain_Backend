@@ -2,6 +2,8 @@ import {
   ProfessionalResponseDTO,
 } from "../../dto/professional.dto.ts";
 import { DocumentIdentityConflictError, isDocumentIdentityUniqueConstraintError } from "../../exceptions/errors/document-identity-conflict.error.ts";
+import { EmailConflictError, isEmailUniqueConstraintError } from "../../exceptions/errors/email-conflict.error.ts";
+import { MedicalLicenseConflictError, isMedicalLicenseUniqueConstraintError } from "../../exceptions/errors/medical-license-conflict.error.ts";
 import {
   CreateProfessionalData,
   IProfessionalRepository,
@@ -107,6 +109,12 @@ export class ProfessionalPrismaRepository implements IProfessionalRepository {
     } catch (error) {
       if (isDocumentIdentityUniqueConstraintError(error)) {
         throw new DocumentIdentityConflictError();
+      }
+      if (isEmailUniqueConstraintError(error)) {
+        throw new EmailConflictError();
+      }
+      if (isMedicalLicenseUniqueConstraintError(error)) {
+        throw new MedicalLicenseConflictError();
       }
       throw error;
     }

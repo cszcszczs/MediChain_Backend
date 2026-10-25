@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import { ProfessionalRequestDTO } from "../dto/professional.dto.ts";
 import { DocumentIdentityConflictError } from "../exceptions/errors/document-identity-conflict.error.ts";
+import { EmailConflictError } from "../exceptions/errors/email-conflict.error.ts";
+import { MedicalLicenseConflictError } from "../exceptions/errors/medical-license-conflict.error.ts";
 import { IProfessionalInterface } from "../services/interfaces/professional.interface.ts";
 
 export class ProfessionalController {
@@ -13,6 +15,14 @@ export class ProfessionalController {
       res.status(201).json(result);
     } catch (error) {
       if (error instanceof DocumentIdentityConflictError) {
+        res.status(409).json({ message: error.message });
+        return;
+      }
+      if (error instanceof EmailConflictError) {
+        res.status(409).json({ message: error.message });
+        return;
+      }
+      if (error instanceof MedicalLicenseConflictError) {
         res.status(409).json({ message: error.message });
         return;
       }

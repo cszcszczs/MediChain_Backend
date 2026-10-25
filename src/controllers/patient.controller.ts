@@ -1,5 +1,6 @@
 import { PatientRequestDTO } from "../dto/patient.dto.ts";
 import { DocumentIdentityConflictError } from "../exceptions/errors/document-identity-conflict.error.ts";
+import { EmailConflictError } from "../exceptions/errors/email-conflict.error.ts";
 import { IPatientInterface } from "../services/interfaces/patient.interface.ts";
 import { Request, Response } from "express"
 
@@ -13,6 +14,10 @@ export class PatientController {
       res.status(201).json(result);
     } catch (error) {
       if (error instanceof DocumentIdentityConflictError) {
+        res.status(409).json({ message: error.message });
+        return;
+      }
+      if (error instanceof EmailConflictError) {
         res.status(409).json({ message: error.message });
         return;
       }
