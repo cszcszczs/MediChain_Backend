@@ -7,6 +7,14 @@ import {
   DocumentIdentityConflictError,
   isDocumentIdentityUniqueConstraintError,
 } from "../src/exceptions/errors/document-identity-conflict.error.ts";
+import {
+  EmailConflictError,
+  isEmailUniqueConstraintError,
+} from "../src/exceptions/errors/email-conflict.error.ts";
+import {
+  isMedicalLicenseUniqueConstraintError,
+  MedicalLicenseConflictError,
+} from "../src/exceptions/errors/medical-license-conflict.error.ts";
 import type { IPatientInterface } from "../src/services/interfaces/patient.interface.ts";
 import type { IProfessionalInterface } from "../src/services/interfaces/professional.interface.ts";
 
@@ -64,6 +72,91 @@ describe("document identity conflicts", () => {
     assert.equal(response.getStatus(), 409);
     assert.deepEqual(response.getBody(), {
       message: "Ya existe un usuario con ese tipo y número de documento",
+    });
+  });
+
+  describe("email conflicts", () => {
+    it("recognizes unique violations for email only", () => {
+      assert.equal(isEmailUniqueConstraintError({
+        code: "P2002",
+        meta: { target: ["email"] },
+      }), true);
+      assert.equal(isEmailUniqueConstraintError({
+        code: "P2002",
+        meta: {
+          driverAdapterError: {
+            cause: { constraint: { index: "users_email_key" } },
+          },
+        },
+      }), true);
+      assert.equal(isEmailUniqueConstraintError({
+        code: "P2002",
+        meta: { target: ["medical_license"] },
+      }), false);
+      assert.equal(isEmailUniqueConstraintError(new Error("database unavailable")), false);
+    });
+
+    it("returns 409 when patient registration uses an existing email", async () => {
+      const controller = new PatientController({
+        createPatient: async () => { throw new EmailConflictError(); },
+        listActivePatients: async () => [],
+      } as IPatientInterface);
+      const response = createResponse();
+
+      await controller.createUser({ body: {} } as Request, response.response);
+
+      assert.equal(response.getStatus(), 409);
+      assert.deepEqual(response.getBody(), { message: "El correo ya está registrado" });
+    });
+
+    it("returns 409 when professional registration uses an existing email", async () => {
+      const controller = new ProfessionalController({
+        createProfessional: async () => { throw new EmailConflictError(); },
+        listActiveProfessionals: async () => [],
+      } as IProfessionalInterface);
+      const response = createResponse();
+
+      await controller.createProfessional({ body: {} } as Request, response.response);
+
+      assert.equal(response.getStatus(), 409);
+      assert.deepEqual(response.getBody(), { message: "El correo ya está registrado" });
+    });
+  });
+
+  describe("medical license conflicts", () => {
+    it("recognizes unique violations for the medical license only", () => {
+      assert.equal(isMedicalLicenseUniqueConstraintError({
+        code: "P2002",
+        meta: { target: ["medicalLicense"] },
+      }), true);
+      assert.equal(isMedicalLicenseUniqueConstraintError({
+        code: "P2002",
+        meta: {
+          driverAdapterError: {
+            cause: { constraint: { index: "professionals_medical_license_key" } },
+          },
+        },
+      }), true);
+      assert.equal(isMedicalLicenseUniqueConstraintError({
+        code: "P2002",
+        meta: { target: ["email"] },
+      }), false);
+      assert.equal(isMedicalLicenseUniqueConstraintError(new Error("database unavailable")), false);
+    });
+
+    it("returns 409 when professional registration uses an existing medical license", async () => {
+      const controller = new ProfessionalController({
+        createProfessional: async () => { throw new MedicalLicenseConflictError(); },
+        listActiveProfessionals: async () => [],
+      } as IProfessionalInterface);
+      const response = createResponse();
+
+      await controller.createProfessional({ body: {} } as Request, response.response);
+
+      assert.equal(response.getStatus(), 409);
+      assert.deepEqual(response.getBody(), {
+        message: "La licencia médica ya está registrada",
+      });
     });
   });
 

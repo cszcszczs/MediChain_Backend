@@ -1,5 +1,6 @@
 import { PatientResponseDTO } from "../../dto/patient.dto.ts";
 import { DocumentIdentityConflictError, isDocumentIdentityUniqueConstraintError } from "../../exceptions/errors/document-identity-conflict.error.ts";
+import { EmailConflictError, isEmailUniqueConstraintError } from "../../exceptions/errors/email-conflict.error.ts";
 import { CreatePatientData } from "../../services/interfaces/patient.interface.ts";
 import { IPatientRepository } from "../../services/interfaces/patient.interface.ts";
 import prisma from "../index.ts";
@@ -86,6 +87,9 @@ export class PatientPrismaRepository implements IPatientRepository {
         } catch (error) {
             if (isDocumentIdentityUniqueConstraintError(error)) {
                 throw new DocumentIdentityConflictError();
+            }
+            if (isEmailUniqueConstraintError(error)) {
+                throw new EmailConflictError();
             }
             throw error;
         }
