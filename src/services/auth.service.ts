@@ -35,7 +35,7 @@ export class AuthService {
     return {
       accessToken,
       tokenType: "Bearer",
-      user: { id: user.id, email: user.email },
+      user: { id: user.id, email: user.email, name: user.name },
     };
   }
 }
