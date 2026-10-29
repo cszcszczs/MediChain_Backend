@@ -24,9 +24,9 @@ export class AccessGrantService {
     return created;
   }
 
-  async listGrants(filters: ListAccessGrantsDTO): Promise<AccessGrantResponseDTO[]> {
+  async listGrants(userId: string, filters: ListAccessGrantsDTO): Promise<AccessGrantResponseDTO[]> {
     await this.accessGrantRepository.expireDueGrants(new Date());
-    return this.accessGrantRepository.listGrants(filters);
+    return this.accessGrantRepository.listGrants(userId, filters);
   }
 
   async acceptGrant(id: string, userId: string): Promise<AccessGrantResponseDTO> {

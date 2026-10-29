@@ -34,14 +34,20 @@ const createRepository = (overrides: {
   revokeResult?: AccessGrantResponseDTO | null;
   existingResult?: AccessGrantResponseDTO | null;
 } = {}) => {
-  const calls = { created: [] as unknown[], accepted: 0, revoked: 0, expired: 0, filters: [] as unknown[] };
+  const calls = {
+    created: [] as unknown[],
+    accepted: 0,
+    revoked: 0,
+    expired: 0,
+    listed: [] as { userId: string; filters: unknown }[],
+  };
   const repository: IAccessGrantRepository = {
     createGrant: async (input) => {
       calls.created.push(input);
       return overrides.createResult === undefined ? grantResponse : overrides.createResult;
     },
-    listGrants: async (filters) => {
-      calls.filters.push(filters);
+    listGrants: async (userId, filters) => {
+      calls.listed.push({ userId, filters });
       return [grantResponse];
     },
     findGrantById: async () => overrides.existingResult === undefined ? grantResponse : overrides.existingResult,
@@ -126,9 +132,9 @@ describe("AccessGrantService", () => {
     assert.equal(activeGrant.calls.expired, 1);
 
     const list = createRepository();
-    await list.service.listGrants({ status: "PENDING" });
+    await list.service.listGrants("patient-user", { status: "PENDING" });
     assert.equal(list.calls.expired, 1);
-    assert.deepEqual(list.calls.filters, [{ status: "PENDING" }]);
+    assert.deepEqual(list.calls.listed, [{ userId: "patient-user", filters: { status: "PENDING" } }]);
   });
 
   it("keeps revocation idempotent and does not overwrite its original record", async () => {

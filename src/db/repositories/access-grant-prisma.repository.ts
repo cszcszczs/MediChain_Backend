@@ -66,19 +66,27 @@ export class AccessGrantPrismaRepository implements IAccessGrantRepository {
     return toResponse(grant);
   }
 
-  async listGrants(filters: ListAccessGrantsDTO): Promise<AccessGrantResponseDTO[]> {
+  async listGrants(userId: string, filters: ListAccessGrantsDTO): Promise<AccessGrantResponseDTO[]> {
     const search = filters.search?.trim();
     const grants = await prisma.accessGrant.findMany({
       where: {
-        ...(filters.status ? { status: filters.status } : {}),
-        ...(search ? {
-          OR: [
-            { professional: { firstName: { contains: search, mode: "insensitive" } } },
-            { professional: { lastName: { contains: search, mode: "insensitive" } } },
-            { patient: { firstName: { contains: search, mode: "insensitive" } } },
-            { patient: { lastName: { contains: search, mode: "insensitive" } } },
-          ],
-        } : {}),
+        AND: [
+          {
+            OR: [
+              { patient: { userId } },
+              { professional: { userId } },
+            ],
+          },
+          ...(filters.status ? [{ status: filters.status }] : []),
+          ...(search ? [{
+            OR: [
+              { professional: { firstName: { contains: search, mode: "insensitive" as const } } },
+              { professional: { lastName: { contains: search, mode: "insensitive" as const } } },
+              { patient: { firstName: { contains: search, mode: "insensitive" as const } } },
+              { patient: { lastName: { contains: search, mode: "insensitive" as const } } },
+            ],
+          }] : []),
+        ],
       },
       include: grantRelations,
       orderBy: [{ grantedAt: "desc" }, { id: "asc" }],
