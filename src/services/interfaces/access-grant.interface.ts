@@ -14,7 +14,7 @@ export interface AccessGrantTransitionData {
 
 export interface IAccessGrantRepository {
   createGrant(input: CreateAccessGrantDTO & { grantedByUserId: string }): Promise<AccessGrantResponseDTO | null>;
-  listGrants(filters: ListAccessGrantsDTO): Promise<AccessGrantResponseDTO[]>;
+  listGrants(userId: string, filters: ListAccessGrantsDTO): Promise<AccessGrantResponseDTO[]>;
   findGrantById(id: string): Promise<AccessGrantResponseDTO | null>;
   expireDueGrants(now: Date): Promise<void>;
   findTransitionData(id: string): Promise<AccessGrantTransitionData | null>;

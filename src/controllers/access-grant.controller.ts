@@ -23,8 +23,15 @@ export class AccessGrantController {
   };
 
   list = async (req: Request, res: Response): Promise<void> => {
+    if (!req.auth?.userId) {
+      res.status(401).json({ message: "Token de autenticación requerido" });
+      return;
+    }
     try {
-      const result = await this.accessGrantService.listGrants(res.locals.filters as ListAccessGrantsDTO);
+      const result = await this.accessGrantService.listGrants(
+        req.auth.userId,
+        res.locals.filters as ListAccessGrantsDTO,
+      );
       res.status(200).json(result);
     } catch (error) {
       this.respondError(error, res);

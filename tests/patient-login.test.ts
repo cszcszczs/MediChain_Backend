@@ -33,6 +33,7 @@ describe("AuthService.login", () => {
   const createUser = (overrides: Partial<UserLoginData> = {}): UserLoginData => ({
     id: "user-123",
     email: credentials.email,
+    name: "Ana Perez",
     isActive: true,
     authCredential: { passwordHash },
     ...overrides,
@@ -45,6 +46,7 @@ describe("AuthService.login", () => {
     assert.equal(result.tokenType, "Bearer");
     assert.equal(result.user.id, "user-123");
     assert.equal(result.user.email, credentials.email);
+    assert.equal(result.user.name, "Ana Perez");
     assert.equal("passwordHash" in result.user, false);
 
     const { payload } = await jwtVerify(
