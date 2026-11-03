@@ -9,11 +9,10 @@ if (!jwtSecret || new TextEncoder().encode(jwtSecret).byteLength < 32) {
 
 export const env = {
   port: process.env.PORT ? Number(process.env.PORT) : 3000,
-  url: process.env.DIRECT_URL || process.env.DATABASE_URL!,
+  url: process.env.DATABASE_URL || process.env.DIRECT_URL!,
   jwtSecret,
   supabaseUrl: process.env.SUPABASE_URL,
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
   supabaseHistoryBucket: process.env.SUPABASE_HISTORY_BUCKET || "medical-history",
   level: process.env.LOG_LEVEL || "info",
 }
-

@@ -6,11 +6,10 @@ import { Pool } from "pg";
 
 const email = process.env.ADMIN_EMAIL?.trim();
 const password = process.env.ADMIN_PASSWORD;
-const connectionString =
-  process.env.DIRECT_URL ??
-  process.env.DATABASE_URL ??
-  process.env.SUPABASE_DIRECT_URL ??
-  process.env.SUPABASE_DATABASE_URL;
+const seedSupabase = process.argv.includes("--supabase");
+const connectionString = seedSupabase
+  ? process.env.SUPABASE_DIRECT_URL
+  : process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 
 if (!email) {
   throw new Error("ADMIN_EMAIL debe configurarse para ejecutar el seed");
@@ -19,7 +18,11 @@ if (!password || password.length < 8) {
   throw new Error("ADMIN_PASSWORD debe configurarse con al menos 8 caracteres");
 }
 if (!connectionString) {
-  throw new Error("Configura DIRECT_URL o DATABASE_URL para ejecutar el seed");
+  throw new Error(
+    seedSupabase
+      ? "SUPABASE_DIRECT_URL debe configurarse para ejecutar el seed de Supabase"
+      : "Configura DIRECT_URL o DATABASE_URL para ejecutar el seed",
+  );
 }
 
 const isLocalDatabase = ["localhost", "127.0.0.1", "[::1]"].includes(
