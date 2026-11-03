@@ -12,7 +12,7 @@
     "db:seed:supabase": "tsx prisma/seed.ts --supabase",
     "db:migrate:supabase": "prisma migrate deploy --config prisma.supabase.config.ts",
     "test:run": "node --import tsx --test",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "c8 --reporter=text --reporter=lcov node --import tsx --test"
   },
   "keywords": [],
   "author": "",
@@ -49,6 +49,7 @@
     "@types/node": "^22.0.0",
     "@types/pg": "^8.23.1",
     "@vitest/coverage-v8": "^5.1.0",
+    "c8": "^12.0.0",
     "prisma": "^7.10.0",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2"
