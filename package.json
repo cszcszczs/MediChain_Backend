@@ -9,6 +9,7 @@
     "dev": "tsx watch src/main.ts",
     "start": "node dist/main.js",
     "db:seed": "tsx prisma/seed.ts",
+    "db:migrate:supabase": "prisma migrate deploy --config prisma.supabase.config.ts",
     "test:run": "node --import tsx --test",
     "test:coverage": "vitest run --coverage"
   },

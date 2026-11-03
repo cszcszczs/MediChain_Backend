@@ -83,6 +83,12 @@ npx prisma generate
 npx prisma migrate deploy
 ```
 
+`npx prisma migrate deploy` usa la configuración local (`DIRECT_URL` si existe; en caso contrario, `DATABASE_URL`). Para aplicar las migraciones explícitamente a Supabase usando `SUPABASE_DIRECT_URL`, ejecuta:
+
+```bash
+npm run db:migrate:supabase
+```
+
 5. Configura `ADMIN_EMAIL` y `ADMIN_PASSWORD` en `.env` y crea el usuario inicial:
 
 ```bash
@@ -119,7 +125,7 @@ Nota importante:
 
 - `JWT_SECRET` es obligatorio y debe tener al menos 32 bytes.
 - La API usa `DATABASE_URL` para conectarse con Prisma. En Vercel, configura aquí la URL del pooler de PostgreSQL.
-- `DIRECT_URL` se reserva para tareas de migración que necesiten una conexión directa; si ambas variables están definidas, la API prioriza `DATABASE_URL`.
+- La API prioriza `DATABASE_URL` aunque `DIRECT_URL` esté definida. El comando local de migración usa `DIRECT_URL` si existe; `npm run db:migrate:supabase` selecciona explícitamente `SUPABASE_DIRECT_URL`.
 - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` y `SUPABASE_HISTORY_BUCKET` son requeridos si vas a subir archivos al historial médico.
 
 ## Ejecución
@@ -181,7 +187,7 @@ Configura en **Project Settings → Environment Variables**:
 
 Usa una base de datos de prueba para los deployments Preview y no expongas credenciales ni datos clínicos reales en CI. No configures `DIRECT_URL` como variable runtime de Vercel: la API debe usar la conexión agrupada de `DATABASE_URL`.
 
-Las migraciones se deben aplicar una sola vez por release usando una conexión directa (`DIRECT_URL`), antes de que el nuevo código dependa del esquema actualizado. No las ejecutes desde cada instancia de la API ni automáticamente en los deployments Preview. El workflow de CI de este repositorio prueba las migraciones contra una base PostgreSQL efímera; no modifica la base de producción.
+Aplica las migraciones a Supabase desde un entorno confiable con `npm run db:migrate:supabase`; el comando utiliza `SUPABASE_DIRECT_URL` de `.env`. Hazlo una sola vez por release antes de que el nuevo código dependa del esquema actualizado. No las ejecutes desde cada instancia de la API ni automáticamente en los deployments Preview. El workflow de CI de este repositorio prueba las migraciones contra una base PostgreSQL efímera; no modifica la base de producción.
 
 ## Autenticación
 
