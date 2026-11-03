@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { once } from "node:events";
-import { after, before, describe, it } from "node:test";
+import { afterAll, beforeAll, describe, it } from "vitest";
 import { verify } from "argon2";
 import { SignJWT } from "jose";
 import { createProfessionalSchema } from "../src/dto/professional.dto.ts";
@@ -90,7 +90,7 @@ describe("GET /v1/professional", () => {
   let server: Awaited<ReturnType<typeof import("node:http").createServer>>;
   let endpoint: string;
 
-  before(async () => {
+  beforeAll(async () => {
     process.env.JWT_SECRET = jwtSecret;
     const { createServer } = await import("../src/server.ts");
     server = createServer().listen(0, "127.0.0.1");
@@ -100,7 +100,7 @@ describe("GET /v1/professional", () => {
     endpoint = `http://127.0.0.1:${address.port}/v1/professional`;
   });
 
-  after(async () => {
+  afterAll(async () => {
     await new Promise<void>((resolve, reject) => {
       server.close((error) => (error ? reject(error) : resolve()));
     });
@@ -138,7 +138,7 @@ describe("POST /v1/professional", () => {
   let server: Awaited<ReturnType<typeof import("node:http").createServer>>;
   let endpoint: string;
 
-  before(async () => {
+  beforeAll(async () => {
     process.env.JWT_SECRET = jwtSecret;
     const { createServer } = await import("../src/server.ts");
     server = createServer().listen(0, "127.0.0.1");
@@ -148,7 +148,7 @@ describe("POST /v1/professional", () => {
     endpoint = `http://127.0.0.1:${address.port}/v1/professional`;
   });
 
-  after(async () => {
+  afterAll(async () => {
     if (server) {
       await new Promise<void>((resolve, reject) => {
         server.close((error) => (error ? reject(error) : resolve()));
