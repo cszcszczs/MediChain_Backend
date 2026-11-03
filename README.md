@@ -10,6 +10,7 @@ Backend REST para gestión de pacientes, profesionales médicos, historial clín
 - [Instalación](#instalación)
 - [Variables de entorno](#variables-de-entorno)
 - [Ejecución](#ejecución)
+- [Despliegue en Vercel](#despliegue-en-vercel)
 - [Autenticación](#autenticación)
 - [Endpoints](#endpoints)
 - [Notas adicionales](#notas-adicionales)
@@ -53,7 +54,7 @@ http://localhost:3000/v1
 
 Antes de iniciar el proyecto debes tener instalado:
 
-- Node.js 18 o superior
+- Node.js 22.x
 - npm o pnpm
 - PostgreSQL
 - Cuenta de Supabase (si vas a usar almacenamiento para historiales)
@@ -117,7 +118,8 @@ SUPABASE_HISTORY_BUCKET=medical-history
 Nota importante:
 
 - `JWT_SECRET` es obligatorio y debe tener al menos 32 bytes.
-- El backend usa `DATABASE_URL` o `DIRECT_URL` para conectarse con Prisma.
+- La API usa `DATABASE_URL` para conectarse con Prisma. En Vercel, configura aquí la URL del pooler de PostgreSQL.
+- `DIRECT_URL` se reserva para tareas de migración que necesiten una conexión directa; si ambas variables están definidas, la API prioriza `DATABASE_URL`.
 - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` y `SUPABASE_HISTORY_BUCKET` son requeridos si vas a subir archivos al historial médico.
 
 ## Ejecución
@@ -166,6 +168,20 @@ Respuesta esperada:
   "message": "Server Running..."
 }
 ```
+
+## Despliegue en Vercel
+
+Conecta el repositorio de GitHub como un proyecto de Vercel y configura Node.js 22.x. Vercel detecta la aplicación Express exportada desde `src/server.ts`: los cambios de ramas/PR generan deployments de preview y los cambios en la rama de producción (por ejemplo, `main`) generan el deployment de producción.
+
+Configura en **Project Settings → Environment Variables**:
+
+- `DATABASE_URL`: URL del pooler de PostgreSQL para las solicitudes de la API.
+- `JWT_SECRET`: secreto aleatorio de al menos 32 bytes.
+- `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` y `SUPABASE_HISTORY_BUCKET`: valores del proyecto de Supabase que usa ese entorno.
+
+Usa una base de datos de prueba para los deployments Preview y no expongas credenciales ni datos clínicos reales en CI. No configures `DIRECT_URL` como variable runtime de Vercel: la API debe usar la conexión agrupada de `DATABASE_URL`.
+
+Las migraciones se deben aplicar una sola vez por release usando una conexión directa (`DIRECT_URL`), antes de que el nuevo código dependa del esquema actualizado. No las ejecutes desde cada instancia de la API ni automáticamente en los deployments Preview. El workflow de CI de este repositorio prueba las migraciones contra una base PostgreSQL efímera; no modifica la base de producción.
 
 ## Autenticación
 
