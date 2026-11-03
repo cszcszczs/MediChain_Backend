@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import type { Request, Response } from "express";
-import { describe, it } from "node:test";
+import { describe, it } from "vitest";
 import { PatientController } from "../src/controllers/patient.controller.ts";
 import { ProfessionalController } from "../src/controllers/professional.controller.ts";
 import {

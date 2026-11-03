@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { once } from "node:events";
-import { after, before, describe, it } from "node:test";
+import { afterAll, beforeAll, describe, it } from "vitest";
 import { SignJWT } from "jose";
 
 const jwtSecret = "patient-registration-test-secret-at-least-32-bytes";
@@ -10,7 +10,7 @@ describe("POST /v1/patient", () => {
   let server: Awaited<ReturnType<typeof import("node:http").createServer>>;
   let endpoint: string;
 
-  before(async () => {
+  beforeAll(async () => {
     const { createServer } = await import("../src/server.ts");
     server = createServer().listen(0, "127.0.0.1");
     await once(server, "listening");
@@ -19,7 +19,7 @@ describe("POST /v1/patient", () => {
     endpoint = `http://127.0.0.1:${address.port}/v1/patient`;
   });
 
-  after(async () => {
+  afterAll(async () => {
     await new Promise<void>((resolve, reject) => {
       server.close((error) => (error ? reject(error) : resolve()));
     });

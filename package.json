@@ -5,13 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "prisma generate && tsc -p tsconfig.build.json",
-    "test": "node --import tsx --test",
+    "test": "vitest run",
     "dev": "tsx watch src/main.ts",
     "start": "node dist/main.js",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:supabase": "tsx prisma/seed.ts --supabase",
     "db:migrate:supabase": "prisma migrate deploy --config prisma.supabase.config.ts",
-    "test:run": "node --import tsx --test",
+    "test:run": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
   "keywords": [],
@@ -51,6 +51,7 @@
     "@vitest/coverage-v8": "^5.1.0",
     "prisma": "^7.10.0",
     "tsx": "^4.23.13",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
   }
 }
