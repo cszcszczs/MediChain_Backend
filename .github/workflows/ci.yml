@@ -7,7 +7,9 @@ on:
       - main
 
 permissions:
+  actions: read
   contents: read
+  statuses: write
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -58,3 +60,7 @@ jobs:
         env:
           SONAR_HOST_URL: https://sonarcloud.io
           SONAR_TOKEN: ${{ secrets.TOKEN_SONAR }}
+      - name: Notify Vercel deployment checks
+        uses: vercel/repository-dispatch/actions/status@v1
+        with:
+          name: "Vercel - medi-chain-backend: ci"
