@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import type { Server } from "node:http";
 import { once } from "node:events";
-import { after, before, describe, it } from "node:test";
+import { afterAll, beforeAll, describe, it } from "vitest";
 import { SignJWT } from "jose";
 import { createHistorySchema } from "../src/dto/history.dto.ts";
 import { HistoryError, HistoryService } from "../src/services/history.service.ts";
@@ -155,7 +155,7 @@ describe("POST /v1/history", () => {
   let server: Server;
   let endpoint: string;
 
-  before(async () => {
+  beforeAll(async () => {
     const { createServer } = await import("../src/server.ts");
     server = createServer().listen(0, "127.0.0.1");
     await once(server, "listening");
@@ -164,7 +164,7 @@ describe("POST /v1/history", () => {
     endpoint = `http://127.0.0.1:${address.port}/v1/history`;
   });
 
-  after(async () => {
+  afterAll(async () => {
     await new Promise<void>((resolve, reject) => {
       server.close((error) => (error ? reject(error) : resolve()));
     });

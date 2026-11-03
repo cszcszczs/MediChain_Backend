@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { once } from "node:events";
 import type { Server } from "node:http";
-import { after, before, describe, it } from "node:test";
+import { afterAll, beforeAll, describe, it } from "vitest";
 import { SignJWT } from "jose";
 import { createAccessGrantSchema, listAccessGrantsSchema } from "../src/dto/access-grant.dto.ts";
 import { AccessGrantError, AccessGrantService } from "../src/services/access-grant.service.ts";
@@ -162,7 +162,7 @@ describe("access grant routes", () => {
   let server: Server;
   let endpoint: string;
 
-  before(async () => {
+  beforeAll(async () => {
     const { createServer } = await import("../src/server.ts");
     server = createServer().listen(0, "127.0.0.1");
     await once(server, "listening");
@@ -171,7 +171,7 @@ describe("access grant routes", () => {
     endpoint = `http://127.0.0.1:${address.port}/v1/access-grants`;
   });
 
-  after(async () => {
+  afterAll(async () => {
     await new Promise<void>((resolve, reject) => {
       server.close((error) => (error ? reject(error) : resolve()));
     });

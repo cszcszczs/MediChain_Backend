@@ -1,25 +1,26 @@
 import assert from "node:assert/strict";
 import { once } from "node:events";
-import { after, before, describe, it } from "node:test";
+import type { Server } from "node:http";
+import { afterAll, beforeAll, describe, it } from "vitest";
 import { SignJWT } from "jose";
 
 const jwtSecret = "patient-list-test-secret-with-at-least-32-bytes";
 process.env.JWT_SECRET = jwtSecret;
 
-const { createServer } = await import("../src/server.ts");
-
 describe("GET /v1/patient", () => {
-  const server = createServer().listen(0, "127.0.0.1");
+  let server: Server;
   let baseUrl: string;
 
-  before(async () => {
+  beforeAll(async () => {
+    const { createServer } = await import("../src/server.ts");
+    server = createServer().listen(0, "127.0.0.1");
     await once(server, "listening");
     const address = server.address();
     assert.ok(address && typeof address !== "string");
     baseUrl = `http://127.0.0.1:${address.port}/v1/patient`;
   });
 
-  after(async () => {
+  afterAll(async () => {
     await new Promise<void>((resolve, reject) => {
       server.close((error) => (error ? reject(error) : resolve()));
     });
