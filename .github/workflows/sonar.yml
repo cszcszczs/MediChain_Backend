@@ -1,7 +1,12 @@
 name: SonarCloud Analysis
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   sonar:
@@ -33,8 +38,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Generate Prisma Client
-        run: npx prisma generate
       - name: Apply migrations to test database
         run: npx prisma migrate deploy
       - run: npm run test:coverage

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { before, describe, it } from "node:test";
+import { beforeAll, describe, it } from "vitest";
 import { hash } from "argon2";
 import { jwtVerify } from "jose";
 import type { UserLoginData, IAuthRepository } from "../src/services/interfaces/auth.interface.ts";
@@ -18,7 +18,7 @@ const credentials: LoginRequestDTO = {
 describe("AuthService.login", () => {
   let passwordHash: string;
 
-  before(async () => {
+  beforeAll(async () => {
     passwordHash = await hash(credentials.password);
   });
 
