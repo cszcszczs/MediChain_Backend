@@ -97,6 +97,14 @@ npm run db:seed
 
 El seed es idempotente: si el usuario ya existe, no cambia su contraseña; si aún no tiene credenciales, las crea. La contraseña debe tener al menos 8 caracteres y se almacena con hash Argon2. Este usuario puede iniciar sesión como cualquier otra cuenta; el modelo actual no asigna roles de administrador.
 
+Para crear ese usuario inicial directamente en Supabase usando `SUPABASE_DIRECT_URL`:
+
+```bash
+npm run db:seed:supabase
+```
+
+Este comando falla si `SUPABASE_DIRECT_URL`, `ADMIN_EMAIL` o `ADMIN_PASSWORD` no están configuradas; no usa como alternativa la URL local. Ejecuta primero `npm run db:migrate:supabase` para crear el esquema.
+
 Si estás trabajando en local con migraciones de desarrollo:
 
 ```bash
